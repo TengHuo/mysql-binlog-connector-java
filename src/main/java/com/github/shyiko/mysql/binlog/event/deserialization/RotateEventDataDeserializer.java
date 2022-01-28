@@ -16,20 +16,29 @@
 package com.github.shyiko.mysql.binlog.event.deserialization;
 
 import com.github.shyiko.mysql.binlog.event.RotateEventData;
+import com.github.shyiko.mysql.binlog.event.TableMapEventData;
 import com.github.shyiko.mysql.binlog.io.ByteArrayInputStream;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:stanley.shyiko@gmail.com">Stanley Shyiko</a>
  */
 public class RotateEventDataDeserializer implements EventDataDeserializer<RotateEventData> {
 
+    private final Map<Long, TableMapEventData> tableMapEventByTableId;
+
+    public RotateEventDataDeserializer(Map<Long, TableMapEventData> tableMapEventByTableId) {
+        this.tableMapEventByTableId = tableMapEventByTableId;
+    }
+
     @Override
     public RotateEventData deserialize(ByteArrayInputStream inputStream) throws IOException {
         RotateEventData eventData = new RotateEventData();
         eventData.setBinlogPosition(inputStream.readLong(8));
         eventData.setBinlogFilename(inputStream.readString(inputStream.available()));
+        this.tableMapEventByTableId.clear();
         return eventData;
     }
 }
